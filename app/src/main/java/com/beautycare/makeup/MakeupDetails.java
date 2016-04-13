@@ -29,7 +29,7 @@ import com.daimajia.slider.library.SliderTypes.BaseSliderView;
 import com.daimajia.slider.library.SliderTypes.TextSliderView;
 import com.daimajia.slider.library.Tricks.ViewPagerEx;
 import com.google.android.gms.maps.model.LatLng;
-import com.beautycare.mall.Data;
+import com.beautycare.mall.MallData;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -292,13 +292,13 @@ public class MakeupDetails extends AppCompatActivity implements BaseSliderView.O
 
         }
     }
-    class MyTask extends AsyncTask<Void, Void, ArrayList<Data>> {
+    class MyTask extends AsyncTask<Void, Void, ArrayList<MallData>> {
 
-        ArrayList<Data> tmplist = new ArrayList<Data>();
+        ArrayList<MallData> tmplist = new ArrayList<MallData>();
         String urlID;
 
         @Override
-        protected ArrayList<Data> doInBackground(Void... params) {
+        protected ArrayList<MallData> doInBackground(Void... params) {
             //这个方法是在onPreExecute后执行的，params参数的类型是第一个Void，返回的类型是第三个ArrayList<Data>，返回的参数会传到onPostExecute
 
             try {
@@ -317,25 +317,25 @@ public class MakeupDetails extends AppCompatActivity implements BaseSliderView.O
 
                     for (int i = 0; i < result.size(); i++) {
 
-                        Data tmpData = new Data();//封装好的数据类型
+                        MallData tmpMallData = new MallData();//封装好的数据类型
                         mallObject = result.get(i);//获取第i个AVObject
 
-                        tmpData.setTitle(mallObject.getString("mall_name"));
-                        tmpData.setContent(mallObject.getString("content"));
+                        tmpMallData.setMallName(mallObject.getString("mall_name"));
+                        tmpMallData.setMallContent(mallObject.getString("content"));
 
-                        tmpData.setID(mallObject.getObjectId());
+                        tmpMallData.setID(mallObject.getObjectId());
 
                         lat = mallObject.getDouble("Lat");//获取坐标
                         lon = mallObject.getDouble("Lon");
-                        tmpData.setLatLng(new LatLng(lat,lon));
+                        tmpMallData.setLatLng(new LatLng(lat,lon));
 
                         logoObject = mallObject.getAVFile("mall_logo");
 
                         if( logoObject != null) {
                             urlID = logoObject.getUrl();//获取了AVFile之后可以直接获取url
-                            tmpData.setURL(urlID);
+                            tmpMallData.setMallLogoURL(urlID);
                         }
-                        tmplist.add(i, tmpData);//将获取的数据加入全局的一个ArrayList
+                        tmplist.add(i, tmpMallData);//将获取的数据加入全局的一个ArrayList
 
                     }
                 }
@@ -348,13 +348,13 @@ public class MakeupDetails extends AppCompatActivity implements BaseSliderView.O
         }
 
         @Override
-        protected void onPostExecute(ArrayList<Data> tmpdatalist) {
+        protected void onPostExecute(ArrayList<MallData> tmpdatalist) {
 
             Intent intent = new Intent(MakeupDetails.this, MallDetail.class);
             Bundle bundle = new Bundle();
-            bundle.putString("url", tmpdatalist.get(0).getURL());
-            bundle.putString("content", tmpdatalist.get(0).getContent());
-            bundle.putString("name", tmpdatalist.get(0).getTitle());
+            bundle.putString("url", tmpdatalist.get(0).getMallLogoURL());
+            bundle.putString("content", tmpdatalist.get(0).getMallContent());
+            bundle.putString("name", tmpdatalist.get(0).getMallName());
             bundle.putParcelable("latlng", tmpdatalist.get(0).getLatLng());
             intent.putExtras(bundle);
             startActivity(intent);

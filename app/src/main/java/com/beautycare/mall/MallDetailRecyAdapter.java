@@ -21,14 +21,14 @@ public class MallDetailRecyAdapter extends RecyclerView.Adapter<MallDetailRecyAd
     private final LayoutInflater mLayoutInflater;
     private final Context mContext;
 //    private DisplayImageOptions options;
-    private Data data = new Data();
+    private MallData mallData = new MallData();
 
-    public MallDetailRecyAdapter(Context context, Data tmpdatalist)
+    public MallDetailRecyAdapter(Context context, MallData tmpdatalist)
 
     {
         //mTitles = context.getResources().getStringArray(R.array.titles);
         mContext = context;
-        data = tmpdatalist;
+        mallData = tmpdatalist;
         mLayoutInflater = LayoutInflater.from(context);
 
 
@@ -54,8 +54,8 @@ public class MallDetailRecyAdapter extends RecyclerView.Adapter<MallDetailRecyAd
     @Override
     public void onBindViewHolder(VH holder, int position) {
 
-        holder.mallDeName.setText(data.getTitle());
-        holder.mallDeIntro.setText(data.getContent());
+        holder.mallDeName.setText(mallData.getMallName());
+        holder.mallDeIntro.setText(mallData.getMallContent());
     }
 
     @Override

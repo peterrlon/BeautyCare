@@ -20,10 +20,11 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.MenuItem;
 import android.widget.ImageView;
 
-
+import com.avos.avoscloud.AVOSCloud;
 import com.beautycare.R;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -35,16 +36,20 @@ import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 
+import java.util.ArrayList;
 
 
-public class MallDetail extends AppCompatActivity implements OnMapReadyCallback {
+public class MallDetail extends AppCompatActivity implements OnMapReadyCallback,OnTaskCompleted {
 
 
     private RecyclerView mallContRecy;
     private DisplayImageOptions options;
     Bundle receiveBundleData;
     private ImageView mallImage;
-    private Data receiveData = new Data();
+    private MallData receiveMallData = new MallData();
+    private GetMallDataTask getDataInDetailPage;
+    private String mallname = null;
+    private LatLng tmpLatLng;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,6 +57,8 @@ public class MallDetail extends AppCompatActivity implements OnMapReadyCallback 
 
         setContentView(R.layout.mall_detail_main);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        AVOSCloud.initialize(MallDetail.this, "lpjA6quucO5BzlmMPxTrjKwD-gzGzoHsz", "vu6uDC74NlzzJP4YbrJmDFV6");
+//        mallRecyList = (RecyclerView) findViewById(R.id.mall_list_main);
 
         setTitle("Mall");
 
@@ -66,35 +73,31 @@ public class MallDetail extends AppCompatActivity implements OnMapReadyCallback 
                 .imageScaleType(ImageScaleType.EXACTLY)
                 .build();
 
-        receiveBundleData = getIntent().getExtras();
+        getDataInDetailPage = new GetMallDataTask();
+        getDataInDetailPage.taskCompleted = this;
 
-        receiveData.setURL(receiveBundleData.getString("url"));
-        receiveData.setContent(receiveBundleData.getString("content"));
-        receiveData.setTitle(receiveBundleData.getString("name"));
-        receiveData.setLatLng((LatLng) receiveBundleData.get("latlng"));
+
+        receiveBundleData = getIntent().getExtras();
+        mallname = receiveBundleData.getString("name");//其他页面传商场名字参数即可，键名统一为为MallName
+//        receiveMallData.setMallURL(receiveBundleData.getString("url"));
+//        receiveMallData.setMallContent(receiveBundleData.getString("content"));
+//        receiveMallData.setMallName(receiveBundleData.getString("name"));
+//        receiveMallData.setLatLng((LatLng) receiveBundleData.get("latlng"));
 
         mallImage = (ImageView) findViewById(R.id.mall_logo_image);
-        SupportMapFragment mapFragment =
-                (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
-        mapFragment.getMapAsync(this);
-        mallContRecy = (RecyclerView) findViewById(R.id.mall_detail_recylist);
-
-        mallContRecy.setNestedScrollingEnabled(true);
-
-        mallContRecy.setLayoutManager(new LinearLayoutManager(this));
-        mallContRecy.setAdapter(new MallDetailRecyAdapter(this, receiveData));
 
 
-        ImageLoader.getInstance().displayImage(receiveBundleData.getString("url"), mallImage, options);
+
+        getDataInDetailPage.execute(mallname);
+
+
 
     }
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
 
-//        LatLng latLng = (LatLng) receiveBundleData.get("latlon");
-//        System.out.println("latlon");
-        setMapLocation(googleMap, new NamedLocation(receiveData.getTitle(), receiveData.getLatLng()));
+        setMapLocation(googleMap, new NamedLocation(receiveMallData.getMallName(), receiveMallData.getLatLng()));
 
     }
 
@@ -111,6 +114,38 @@ public class MallDetail extends AppCompatActivity implements OnMapReadyCallback 
 
         // Set the map type back to normal.
         map.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+    }
+
+    @Override
+    public void processFinish(ArrayList<MallData> tmpdatalist) {
+
+
+        if( tmpdatalist.size() != 0 )
+        {
+            Log.d("dataTest", tmpdatalist.get(0).toString());
+            receiveMallData.setLatLng(tmpdatalist.get(0).getLatLng());
+            receiveMallData.setMallLogoURL(tmpdatalist.get(0).getMallLogoURL());
+            receiveMallData.setMallContent(tmpdatalist.get(0).getMallContent());
+            tmpLatLng = tmpdatalist.get(0).getLatLng();
+            mallContRecy = (RecyclerView) findViewById(R.id.mall_detail_recylist);
+
+            mallContRecy.setNestedScrollingEnabled(true);
+
+            mallContRecy.setLayoutManager(new LinearLayoutManager(this));
+            mallContRecy.setAdapter(new MallDetailRecyAdapter(this, receiveMallData));
+
+            ImageLoader.getInstance().displayImage(tmpdatalist.get(0).getMallLogoURL(), mallImage, options);
+            SupportMapFragment mapFragment =
+                    (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
+            mapFragment.getMapAsync(this);
+        }
+
+        else {
+
+            Log.d("TestTest", String.valueOf(tmpdatalist.size()));
+        }
+
+
     }
 
 

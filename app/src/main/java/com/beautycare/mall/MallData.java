@@ -5,7 +5,7 @@ import com.google.android.gms.maps.model.LatLng;
 /**
  * Created by peter on 3/6/2016.
  */
-public final class Data {
+public final class MallData {
 
     private String URL;
     private String content;
@@ -30,31 +30,31 @@ public final class Data {
         this.latLng = latLng;
     }
 
-    public Data() {
+    public MallData() {
 
     }
 
-    public String getURL() {
+    public String getMallLogoURL() {
         return URL;
     }
 
-    public void setURL(String URL) {
+    public void setMallLogoURL(String URL) {
         this.URL = URL;
     }
 
-    public String getContent() {
+    public String getMallContent() {
         return content;
     }
 
-    public void setContent(String content) {
+    public void setMallContent(String content) {
         this.content = content;
     }
 
-    public String getTitle() {
+    public String getMallName() {
         return title;
     }
 
-    public void setTitle(String title) {
+    public void setMallName(String title) {
         this.title = title;
     }
 

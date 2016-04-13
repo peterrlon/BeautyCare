@@ -30,15 +30,15 @@ public class MallMainRecyAdapter extends RecyclerView.Adapter<MallMainRecyAdapte
 //    private AVObject getObject;
 //    private Data data;
     private mallListListener mallOnItemClickListner;
-    private ArrayList<Data> dataList;
+    private ArrayList<MallData> mallDataList;
 
 
-    public MallMainRecyAdapter(Context context, ArrayList<Data> tmpdatalist) {
+    public MallMainRecyAdapter(Context context, ArrayList<MallData> tmpdatalist) {
         //mTitles = context.getResources().getStringArray(R.array.titles);
         mContext = context;
         mLayoutInflater = LayoutInflater.from(context);
 
-        dataList = tmpdatalist;
+        mallDataList = tmpdatalist;
 
 
         options = new DisplayImageOptions.Builder()
@@ -55,7 +55,7 @@ public class MallMainRecyAdapter extends RecyclerView.Adapter<MallMainRecyAdapte
 
     public static interface mallListListener {
 
-        void onItemClick(View v, Data tmpdata);
+        void onItemClick(View v, MallData tmpdata);
 
     }
 
@@ -76,11 +76,11 @@ public class MallMainRecyAdapter extends RecyclerView.Adapter<MallMainRecyAdapte
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
 
-        holder.mTextView.setText(/*mTitles[position]*/dataList.get(position).getTitle());
-        Log.d("title", dataList.get(0).getTitle());
-        ImageLoader.getInstance().displayImage(dataList.get(position).getURL(), holder.mImageView, options);
+        holder.mTextView.setText(/*mTitles[position]*/mallDataList.get(position).getMallName());
+        Log.d("title", mallDataList.get(0).getMallName());
+        ImageLoader.getInstance().displayImage(mallDataList.get(position).getMallLogoURL(), holder.mImageView, options);
 
-        holder.itemView.setTag(dataList.get(position));
+        holder.itemView.setTag(mallDataList.get(position));
     }
 
 //    @Override
@@ -91,14 +91,14 @@ public class MallMainRecyAdapter extends RecyclerView.Adapter<MallMainRecyAdapte
     @Override
     public int getItemCount() {
 
-        return dataList.size();
+        return mallDataList.size();
     }
 
     @Override
     public void onClick(View v) {
 
         if (mallOnItemClickListner != null) {
-            mallOnItemClickListner.onItemClick(v, (Data)v.getTag());
+            mallOnItemClickListner.onItemClick(v, (MallData)v.getTag());
         }
     }
 
